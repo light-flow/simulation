@@ -226,6 +226,7 @@ QChart* lineGraphWidget::getConvergenceChart() {
     yAxis->setTitleFont(QFont("宋体"));
     chart->addAxis(xAxis, Qt::AlignBottom);
     chart->addAxis(yAxis, Qt::AlignLeft);
+    // 关联折线与坐标轴
     series->attachAxis(xAxis);
     series->attachAxis(yAxis);
     return chart;
@@ -235,13 +236,13 @@ QChart* lineGraphWidget::getMessageThrChart() {
     auto messageSer = new QLineSeries;
     messageSer->setName(tr("战术消息"));
     int minTime = INT_MAX, maxTime = INT_MIN;
-    double minTot = INT_MAX, maxTot = INT_MIN;
+    double minMes = INT_MAX, maxMes = INT_MIN;
     for (int i = 0; i < timeSeries->size(); i++) {
         messageSer->append(timeSeries->at(i), messageThr->at(i));
         if (minTime > timeSeries->at(i)) minTime = timeSeries->at(i);
         if (maxTime < timeSeries->at(i)) maxTime = timeSeries->at(i);
-        if (minTot > messageThr->at(i)) minTot = messageThr->at(i);
-        if (maxTot < messageThr->at(i)) maxTot = messageThr->at(i);
+        if (minMes > messageThr->at(i)) minMes = messageThr->at(i);
+        if (maxMes < messageThr->at(i)) maxMes = messageThr->at(i);
     }
     auto chart = new QChart;
     // 添加折线
@@ -254,7 +255,7 @@ QChart* lineGraphWidget::getMessageThrChart() {
     xAxis->setLabelFormat("%d");
     xAxis->setTitleText("时间 s");
     xAxis->setTitleFont(QFont("宋体"));
-    yAxis->setRange(minTot, maxTot);
+    yAxis->setRange(minMes, maxMes);
     yAxis->setLabelFormat("%d");
     yAxis->setTitleText("吞吐量 bytes/s");
     yAxis->setTitleFont(QFont("宋体"));
@@ -269,13 +270,13 @@ QChart* lineGraphWidget::getVoiceThrChart() {
     auto voiceSer = new QLineSeries;
     voiceSer->setName(tr("语音"));
     int minTime = INT_MAX, maxTime = INT_MIN;
-    double minTot = INT_MAX, maxTot = INT_MIN;
+    double minVoi = INT_MAX, maxVoi = INT_MIN;
     for (int i = 0; i < timeSeries->size(); i++) {
         voiceSer->append(timeSeries->at(i), voiceThr->at(i));
         if (minTime > timeSeries->at(i)) minTime = timeSeries->at(i);
         if (maxTime < timeSeries->at(i)) maxTime = timeSeries->at(i);
-        if (minTot > voiceThr->at(i)) minTot = voiceThr->at(i);
-        if (maxTot < voiceThr->at(i)) maxTot = voiceThr->at(i);
+        if (minVoi > voiceThr->at(i)) minVoi = voiceThr->at(i);
+        if (maxVoi < voiceThr->at(i)) maxVoi = voiceThr->at(i);
     }
     auto chart = new QChart;
     // 添加折线
@@ -288,7 +289,7 @@ QChart* lineGraphWidget::getVoiceThrChart() {
     xAxis->setLabelFormat("%d");
     xAxis->setTitleText("时间 s");
     xAxis->setTitleFont(QFont("宋体"));
-    yAxis->setRange(minTot, maxTot);
+    yAxis->setRange(minVoi, maxVoi);
     yAxis->setLabelFormat("%d");
     yAxis->setTitleText("吞吐量 bytes/s");
     yAxis->setTitleFont(QFont("宋体"));
@@ -303,13 +304,13 @@ QChart* lineGraphWidget::getVideoThrChart() {
     auto videoSer = new QLineSeries;
     videoSer->setName(tr("视频"));
     int minTime = INT_MAX, maxTime = INT_MIN;
-    double minTot = INT_MAX, maxTot = INT_MIN;
+    double minVid = INT_MAX, maxVid = INT_MIN;
     for (int i = 0; i < timeSeries->size(); i++) {
         videoSer->append(timeSeries->at(i), videoThr->at(i));
         if (minTime > timeSeries->at(i)) minTime = timeSeries->at(i);
         if (maxTime < timeSeries->at(i)) maxTime = timeSeries->at(i);
-        if (minTot > videoThr->at(i)) minTot = videoThr->at(i);
-        if (maxTot < videoThr->at(i)) maxTot = videoThr->at(i);
+        if (minVid > videoThr->at(i)) minVid = videoThr->at(i);
+        if (maxVid < videoThr->at(i)) maxVid = videoThr->at(i);
     }
     auto chart = new QChart;
     // 添加折线
@@ -322,7 +323,7 @@ QChart* lineGraphWidget::getVideoThrChart() {
     xAxis->setLabelFormat("%d");
     xAxis->setTitleText("时间 s");
     xAxis->setTitleFont(QFont("宋体"));
-    yAxis->setRange(minTot, maxTot);
+    yAxis->setRange(minVid, maxVid);
     yAxis->setLabelFormat("%d");
     yAxis->setTitleText("吞吐量 bytes/s");
     yAxis->setTitleFont(QFont("宋体"));
@@ -337,13 +338,13 @@ QChart* lineGraphWidget::getImageThrChart() {
     auto imageSer = new QLineSeries;
     imageSer->setName(tr("图像"));
     int minTime = INT_MAX, maxTime = INT_MIN;
-    double minTot = INT_MAX, maxTot = INT_MIN;
+    double minIma = INT_MAX, maxIma = INT_MIN;
     for (int i = 0; i < timeSeries->size(); i++) {
         imageSer->append(timeSeries->at(i), printThr->at(i));
         if (minTime > timeSeries->at(i)) minTime = timeSeries->at(i);
         if (maxTime < timeSeries->at(i)) maxTime = timeSeries->at(i);
-        if (minTot > printThr->at(i)) minTot = printThr->at(i);
-        if (maxTot < printThr->at(i)) maxTot = printThr->at(i);
+        if (minIma > printThr->at(i)) minIma = printThr->at(i);
+        if (maxIma < printThr->at(i)) maxIma = printThr->at(i);
     }
     auto chart = new QChart;
     // 添加折线
@@ -356,7 +357,7 @@ QChart* lineGraphWidget::getImageThrChart() {
     xAxis->setLabelFormat("%d");
     xAxis->setTitleText("时间 s");
     xAxis->setTitleFont(QFont("宋体"));
-    yAxis->setRange(minTot, maxTot);
+    yAxis->setRange(minIma, maxIma);
     yAxis->setLabelFormat("%d");
     yAxis->setTitleText("吞吐量 bytes/s");
     yAxis->setTitleFont(QFont("宋体"));
