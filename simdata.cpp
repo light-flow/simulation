@@ -41,7 +41,7 @@ int simdata::simres(QString projname,QString scenname){
 //        qDebug()<<line.left(splitindex)<<line.right(line.size()-splitindex-1);
         if(line.contains("Delay"))
         {
-            double predelay = 0;
+//            double predelay = 0;
             while(!line.contains("0"))
             {
                 line = streamread.readLine();
@@ -53,12 +53,12 @@ int simdata::simres(QString projname,QString scenname){
                 time.push_back(line.left(splitindex));
                 if(value=="Undefined")
                 {
-                    double random=QRandomGenerator::global()->bounded(predelay/10);
-                    delay.push_back(QString::number(predelay+random));
+//                    double random=QRandomGenerator::global()->bounded(predelay/10);
+                    delay.push_back("0");
                 }else
                 {
                     delay.push_back(value);
-                    predelay = value.toDouble();
+//                    predelay = value.toDouble();
                 }
                 line = streamread.readLine();
             }

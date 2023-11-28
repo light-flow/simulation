@@ -46,16 +46,19 @@ int resultparser::parserTxtRes(QString filePath,
     std::cout << "time length" << timeSeries->size();
 
     // 使用随机数引擎和分布器生成随机数
-    std::random_device rd;  // 用于获取真正的随机种子
-    std::mt19937 gen(rd()); // Mersenne Twister 伪随机数引擎
-    std::uniform_real_distribution<double> distribution(-0.0005, 0.0005); // 均匀
+//    std::random_device rd;  // 用于获取真正的随机种子
+//    std::mt19937 gen(rd()); // Mersenne Twister 伪随机数引擎
+//    std::uniform_real_distribution<double> distribution(-0.0005, 0.0005); // 均匀
 
     // 计算抖动
     auto seqLen = latencySeries->size();
     double max = INT_MIN, min = INT_MAX, sum = 0;
     for (int i = 0; i < seqLen; i++) {
         max = max < latencySeries->at(i) ? latencySeries->at(i) : max;
-        min = min > latencySeries->at(i) ? latencySeries->at(i) : min;
+        if(latencySeries->at(i)>0)
+        {
+            min = min > latencySeries->at(i) ? latencySeries->at(i) : min;
+        }
         sum += latencySeries->at(i);
     }
     double bounce = max - min, mean = sum/seqLen;
