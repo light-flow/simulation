@@ -1,0 +1,13 @@
+doc file,
+tooltip,Ethernet 10BaseT
+creation source,Object copy
+creation timestamp,10:51:14 Nov 23 2023
+creation data,Copy of switch &lt;-&gt; http_ftp_server
+right-angled,disabled
+label rotation,horizontal
+bundle display,include in bundle
+arrowheads,head and tail
+color,#850000
+line style,solid
+symbol,none
+thickness,1

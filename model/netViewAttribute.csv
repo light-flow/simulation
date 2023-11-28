@@ -1,0 +1,28 @@
+map,world
+slice.count,5
+slice.type [0],background objects
+slice.ui_status [0],visible
+slice.name [0],
+slice.type [1],border map
+slice.ui_status [1],visible
+slice.name [1],
+slice.type [2],grid
+slice.ui_status [2],visible
+slice.name [2],
+slice.type [3],orbits
+slice.ui_status [3],visible
+slice.name [3],
+slice.type [4],network objects
+slice.ui_status [4],visible
+slice.name [4],
+grid division,15
+grid style,dashed
+grid color,#808080
+resolution,1.82788
+ul x,-180
+ul y,90
+lr x,180
+lr y,-90
+iso map names.count,0
+current view,Default View
+view mode,geographic

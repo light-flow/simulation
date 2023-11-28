@@ -1,0 +1,39 @@
+map,world
+slice.count,8
+slice.type [0],shapeset
+slice.ui_status [0],visible
+slice.name [0],DefaultOcean
+slice.x [0],0.000000
+slice.y [0],0.000000
+slice.type [1],shapeset
+slice.ui_status [1],visible
+slice.name [1],DefaultWorld
+slice.x [1],0.000000
+slice.y [1],0.000000
+slice.type [2],background objects
+slice.ui_status [2],visible
+slice.name [2],
+slice.type [3],border map
+slice.ui_status [3],visible
+slice.name [3],
+slice.type [4],grid
+slice.ui_status [4],visible
+slice.name [4],
+slice.type [5],shapeset
+slice.ui_status [5],visible
+slice.name [5],DefaultCities
+slice.x [5],0.000000
+slice.y [5],0.000000
+slice.type [6],orbits
+slice.ui_status [6],visible
+slice.name [6],
+slice.type [7],network objects
+slice.ui_status [7],visible
+slice.name [7],
+grid division,0.000555417
+grid style,dashed
+grid color,#808080
+resolution,120630
+iso map names.count,0
+current view,Default View
+view mode,geographic

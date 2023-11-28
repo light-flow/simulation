@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/model">
+        <file>model/appAttribute.csv</file>
+        <file>model/clientAttribute.csv</file>
+        <file>model/linkAttribute.csv</file>
+        <file>model/netViewAttribute.csv</file>
+        <file>model/networkAttribute.csv</file>
+        <file>model/proAttribute.csv</file>
+        <file>model/serverAttribute.csv</file>
+        <file>model/subnetAttribute.csv</file>
+        <file>model/subnetViewProp.csv</file>
+        <file>model/switchAttribute.csv</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,12 @@
+x position,-84.78761
+y position,5.675517
+threshold,0.0
+icon name,server
+doc file,
+tooltip,Ethernet Server
+creation source,Object copy
+creation timestamp,10:51:14 Nov 23 2023
+creation data,Copy of http_ftp_server
+label color,black
+Application: Supported Services,All
+Application: Transport Protocol Specification,TCP
