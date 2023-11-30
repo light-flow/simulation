@@ -7,7 +7,11 @@
 #include <QSplineSeries>
 #include <QApplication>
 #include <climits>
+#include <QBarSet>
+#include <QBarSeries>
+#include <QBarCategoryAxis>
 #include "resultparser.h"
+#include <QScatterSeries>
 
 lineGraphWidget::lineGraphWidget(QWidget* parent): QWidget(parent) {
     // 设置窗口标题，大小，显示状态，非阻塞模态框
@@ -16,7 +20,7 @@ lineGraphWidget::lineGraphWidget(QWidget* parent): QWidget(parent) {
     this->resize(800, 500);
     // 初始化布局，四个切换按钮
     QGridLayout *layout = new QGridLayout(this);
-    QPushButton *latencyBtn = new QPushButton("时延");
+    QPushButton *latencyBtn = new QPushButton("时延折线图");
     QPushButton *throughputBtn = new QPushButton("总吞吐");
     QPushButton *ditheringBtn = new QPushButton("抖动");
     QPushButton *convergenceBtn = new QPushButton("收敛时间");
@@ -24,6 +28,8 @@ lineGraphWidget::lineGraphWidget(QWidget* parent): QWidget(parent) {
     QPushButton *voiceThrBtn = new QPushButton("语音吞吐");
     QPushButton *videoThrBtn = new QPushButton("视频吞吐");
     QPushButton *imageThrBth = new QPushButton("图像吞吐");
+    QPushButton *latencyScattarBth = new QPushButton("时延散点图");
+    QPushButton *thrBarBth = new QPushButton("分吞吐");
 
     // 初始化图表数据
     timeSeries = new QVector<int>;
@@ -52,19 +58,24 @@ lineGraphWidget::lineGraphWidget(QWidget* parent): QWidget(parent) {
     connect(voiceThrBtn, &QPushButton::clicked, this, &lineGraphWidget::onVoiceBthClick);
     connect(videoThrBtn, &QPushButton::clicked, this, &lineGraphWidget::onVideoBthClick);
     connect(imageThrBth, &QPushButton::clicked, this, &lineGraphWidget::onImageBthClick);
+    connect(latencyScattarBth, &QPushButton::clicked, this, &lineGraphWidget::onLatencyScatterBtnClick);
+    connect(thrBarBth, &QPushButton::clicked, this, &lineGraphWidget::onThrBarBthClick);
     //创建图表框架
     this->cview = new QChartView();
-    cview->setChart(getLatencyChart());
     // 将控件放置到布局之中
-    layout->addWidget(cview, 0, 0, 4, 4);
-    layout->addWidget(latencyBtn, 4, 0);
-    layout->addWidget(throughputBtn, 4, 1);
-    layout->addWidget(ditheringBtn, 4, 2);
-    layout->addWidget(convergenceBtn, 4, 3);
-    layout->addWidget(meaageThrBtn, 5, 0);
-    layout->addWidget(voiceThrBtn, 5, 1);
-    layout->addWidget(videoThrBtn, 5, 2);
-    layout->addWidget(imageThrBth, 5, 3);
+    layout->addWidget(cview, 0, 0, 4, 3);
+    layout->addWidget(throughputBtn, 4, 0);
+    layout->addWidget(ditheringBtn, 4, 1);
+    layout->addWidget(convergenceBtn, 4, 2);
+    // layout->addWidget(meaageThrBtn, 5, 0);
+    // layout->addWidget(voiceThrBtn, 5, 1);
+    // layout->addWidget(videoThrBtn, 5, 2);
+    // layout->addWidget(imageThrBth, 5, 3);
+    layout->addWidget(latencyBtn, 5, 0);
+    layout->addWidget(latencyScattarBth, 5, 1);
+    layout->addWidget(thrBarBth, 5, 2);
+
+    this->onThroughputButtonClick();
 }
 
 void lineGraphWidget::onLatencyButtonClick(){
@@ -99,6 +110,14 @@ void lineGraphWidget::onImageBthClick() {
     cview->setChart(getImageThrChart());
 }
 
+void lineGraphWidget::onLatencyScatterBtnClick() {
+    cview->setChart(getLatencyScatterChart());
+}
+
+void lineGraphWidget::onThrBarBthClick() {
+    cview->setChart(getThrBarChart());
+}
+
 QChart* lineGraphWidget::getLatencyChart() {
     auto series = new QLineSeries;
     int minTime = INT_MAX, maxTime = INT_MIN;
@@ -120,7 +139,7 @@ QChart* lineGraphWidget::getLatencyChart() {
     xAxis->setLabelFormat("%d");
     xAxis->setTitleText("时间 s");
     xAxis->setTitleFont(QFont("宋体"));
-    yAxis->setRange(minLatency, maxLat);
+    yAxis->setRange(minLatency, maxLat * 1.5);
     yAxis->setTitleText("延迟 s");
     yAxis->setTitleFont(QFont("宋体"));
     chart->addAxis(xAxis, Qt::AlignBottom);
@@ -365,5 +384,76 @@ QChart* lineGraphWidget::getImageThrChart() {
     chart->addAxis(yAxis, Qt::AlignLeft);
     imageSer->attachAxis(xAxis);
     imageSer->attachAxis(yAxis);
+    return chart;
+}
+
+QChart* lineGraphWidget::getThrBarChart()
+{
+    QBarSet* set = new QBarSet("吞吐量");
+    QBarSeries* series = new QBarSeries();
+    double sumMesThr = 0, sumVoiThr = 0, sumVidThr = 0, sumImaThr = 0;
+    for (int i = 0; i < timeSeries->size(); i++) {
+        sumMesThr += messageThr->at(i);
+        sumVoiThr += voiceThr->at(i);
+        sumVidThr += videoThr->at(i);
+        sumImaThr += printThr->at(i);
+    }
+    *set << sumMesThr << sumVoiThr << sumVidThr << sumImaThr;
+    series->append(set);
+    auto chart = new QChart;
+    chart->addSeries(series);
+
+    // 设置X轴
+    QStringList categories;
+    categories << "战术消息" << "语音" << "视频" << "图像";
+    QBarCategoryAxis* axisX = new QBarCategoryAxis();
+    axisX->append(categories);
+    axisX->setTitleText("吞吐分类");
+    chart->addAxis(axisX, Qt::AlignBottom);
+    series->attachAxis(axisX);
+
+    // 设置Y轴
+    QValueAxis* axisY = new QValueAxis();     // 创建Y轴
+    axisY->setRange(0, std::max(sumImaThr, std::max(sumVoiThr, std::max(sumVidThr, sumImaThr))));                   // 设置Y轴范围（学习啊，当然是24小时喽）
+    axisY->setTitleText("吞吐量 bytes/s");  // 设置Y轴标题
+    chart->addAxis(axisY, Qt::AlignLeft);     // Y轴左对齐
+    series->attachAxis(axisY);
+
+    return chart;
+}
+
+QChart* lineGraphWidget::getLatencyScatterChart()
+{
+    QScatterSeries* series = new QScatterSeries();              // 创建一个散点数据集对象
+    series->setName("时延");
+    series->setMarkerShape(QScatterSeries::MarkerShapeCircle);  // 设置绘制的散点的样式为圆
+    series->setMarkerSize(6);
+    series->setName(tr("时延"));
+    int minTime = INT_MAX, maxTime = INT_MIN;
+    double minLatency = INT_MAX, maxLat = INT_MIN;
+    for (int i = 0; i < timeSeries->size(); i++) {
+        series->append(timeSeries->at(i), latencySeries->at(i));
+        if (minTime > timeSeries->at(i)) minTime = timeSeries->at(i);
+        if (maxTime < timeSeries->at(i)) maxTime = timeSeries->at(i);
+        if (minLatency > latencySeries->at(i)) minLatency = latencySeries->at(i);
+        if (maxLat < latencySeries->at(i)) maxLat = latencySeries->at(i);
+    }
+    auto chart = new QChart;
+    //定义坐标轴
+    QValueAxis* xAxis = new QValueAxis();
+    QValueAxis* yAxis = new QValueAxis();
+    xAxis->setTickCount(11);
+    xAxis->setRange(minTime, maxTime);
+    xAxis->setLabelFormat("%d");
+    xAxis->setTitleText("时间 s");
+    xAxis->setTitleFont(QFont("宋体"));
+    yAxis->setRange(minLatency, maxLat * 1.5);
+    yAxis->setTitleText("延迟 s");
+    yAxis->setTitleFont(QFont("宋体"));
+    chart->addAxis(xAxis, Qt::AlignBottom);
+    chart->addAxis(yAxis, Qt::AlignLeft);
+    chart->addSeries(series);
+    series->attachAxis(xAxis);
+    series->attachAxis(yAxis);
     return chart;
 }
