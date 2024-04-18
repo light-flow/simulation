@@ -12,7 +12,7 @@ class xmlinput
 public:
     xmlinput();
     int xmlserial(QString inputpath, QList<Node>* list, QVector<QVector<int>>* v);
-    int caltotaldistance(QVector<QVector<int>>* v);//计算总长度
+    //int caltotaldistance(QVector<QVector<int>>* v);//计算总长度
 
 private:
     struct link{
