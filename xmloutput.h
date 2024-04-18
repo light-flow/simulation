@@ -13,6 +13,7 @@ class xmloutput
 public:
     xmloutput();
     int exportxml(QList<Node> list, QVector<QVector<int>> v);
+
 private:
     QVector<int> v1;
     QString traffic;

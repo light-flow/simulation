@@ -57,7 +57,7 @@ void MainWindow::on_import_config_clicked()
         for (int i = 0;it != this->network_nodes.end(); ++it,++i) {
             auto node = *it;
             this->ui->current_node->addItem(node.name, i);
-            if (node.model.compare("HTSXZBZ-2_次接驳盒2") != 0) {
+            if (!node.model.contains("次接驳盒") ) {
                 this->ui->current_node->setItemData(i, node.name, Qt::UserRole - 1);
             } else {
                 lastCanEditIndex = i;
@@ -271,7 +271,7 @@ void MainWindow::on_process_result_button_clicked()
          simdata sim;
          auto projectName = spinbox1->text();
          auto scenname = spinbox2->text();
-         if (sim.simres(projectName, scenname) == 0) {
+         if (sim.simres(projectName, scenname,"G.653",100000) == 0) {               //这里的"G.653"和100000需要替换为对应的变量！！！
              QMessageBox::information(this, "仿真结果处理", "处理完成");
          } else {
              QMessageBox::information(this, "仿真结果处理", "处理失败");

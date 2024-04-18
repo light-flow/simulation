@@ -44,7 +44,7 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v){
     else
     {
         QTextStream * read = new QTextStream(&fileaa);
-        QStringList Data = read->readAll().split("\r\n");
+        QStringList Data = read->readAll().split("\n");
         for(int i = 0 ; i < Data.count(); i++)
         {
             QStringList strLine = Data.at(i).split(",");
@@ -371,7 +371,7 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v){
     else
     {
         QTextStream * read = new QTextStream(&filepa);
-        QStringList Data = read->readAll().split("\r\n");
+        QStringList Data = read->readAll().split("\n");
         for(int i = 0 ; i < Data.count(); i++)
         {
             QStringList strLine = Data.at(i).split(",");
@@ -478,7 +478,7 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v){
             else
             {
                 QTextStream * read = new QTextStream(&filesa);
-                QStringList Data = read->readAll().split("\r\n");
+                QStringList Data = read->readAll().split("\n");
                 for(int i = 2 ; i < Data.count(); i++)
                 {
                     QStringList strLine = Data.at(i).split(",");
@@ -523,7 +523,7 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v){
             else
             {
                 QTextStream * read = new QTextStream(&filesa);
-                QStringList Data = read->readAll().split("\r\n");
+                QStringList Data = read->readAll().split("\n");
                 for(int i = 2 ; i < Data.count(); i++)
                 {
                     QStringList strLine = Data.at(i).split(",");
@@ -568,7 +568,7 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v){
             else
             {
                 QTextStream * read = new QTextStream(&filesa);
-                QStringList Data = read->readAll().split("\r\n");
+                QStringList Data = read->readAll().split("\n");
                 for(int i = 2 ; i < Data.count(); i++)
                 {
                     QStringList strLine = Data.at(i).split(",");
@@ -612,7 +612,7 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v){
             else
             {
                 QTextStream * read = new QTextStream(&filesva);
-                QStringList Data = read->readAll().split("\r\n");
+                QStringList Data = read->readAll().split("\n");
                 for(int i = 2 ; i < Data.count(); i++)
                 {
                     QStringList strLine = Data.at(i).split(",");
@@ -657,7 +657,7 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v){
             else
             {
                 QTextStream * read = new QTextStream(&filesa);
-                QStringList Data = read->readAll().split("\r\n");
+                QStringList Data = read->readAll().split("\n");
                 for(int i = 2 ; i < Data.count(); i++)
                 {
                     QStringList strLine = Data.at(i).split(",");
@@ -689,7 +689,7 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v){
             else
             {
                 QTextStream * read = new QTextStream(&filela);
-                QStringList Data = read->readAll().split("\r\n");
+                QStringList Data = read->readAll().split("\n");
                 for(int i = 0 ; i < Data.count(); i++)
                 {
                     QStringList strLine = Data.at(i).split(",");
@@ -733,7 +733,7 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v){
             else
             {
                 QTextStream * read = new QTextStream(&fileca);
-                QStringList Data = read->readAll().split("\r\n");
+                QStringList Data = read->readAll().split("\n");
                 for(int i = 2 ; i < Data.count(); i++)
                 {
                     QStringList strLine = Data.at(i).split(",");
@@ -788,7 +788,7 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v){
             else
             {
                 QTextStream * read = new QTextStream(&filesa);
-                QStringList Data = read->readAll().split("\r\n");
+                QStringList Data = read->readAll().split("\n");
                 for(int i = 2 ; i < Data.count(); i++)
                 {
                     QStringList strLine = Data.at(i).split(",");
@@ -820,7 +820,7 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v){
             else
             {
                 QTextStream * read = new QTextStream(&filela);
-                QStringList Data = read->readAll().split("\r\n");
+                QStringList Data = read->readAll().split("\n");
                 for(int i = 0 ; i < Data.count(); i++)
                 {
                     QStringList strLine = Data.at(i).split(",");
@@ -859,7 +859,7 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v){
         else
         {
             QTextStream * read = new QTextStream(&filesna);
-            QStringList Data = read->readAll().split("\r\n");
+            QStringList Data = read->readAll().split("\n");
             for(int i = 3 ; i < Data.count(); i++)
             {
                 QStringList strLine = Data.at(i).split(",");
@@ -887,7 +887,7 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v){
         else
         {
             QTextStream * read = new QTextStream(&filesnvp);
-            QStringList Data = read->readAll().split("\r\n");
+            QStringList Data = read->readAll().split("\n");
             for(int i = 0 ; i < Data.count(); i++)
             {
                 QStringList strLine = Data.at(i).split(",");
@@ -920,7 +920,7 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v){
                 writer.writeAttribute("destNode",list.at(j).name+".switch");
 
                 //固有属性
-                writer.writeAttribute("model","10BaseT");
+                writer.writeAttribute("model","1000BaseX");
                 writer.writeAttribute("class","duplex");
                 writer.writeAttribute("ignore_questions","true");
                 writer.writeAttribute("min_match_score","strict matching");
@@ -934,7 +934,7 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v){
                 else
                 {
                     QTextStream * read = new QTextStream(&filela);
-                    QStringList Data = read->readAll().split("\r\n");
+                    QStringList Data = read->readAll().split("\n");
                     for(int i = 0 ; i < Data.count(); i++)
                     {
                         QStringList strLine = Data.at(i).split(",");
@@ -1047,7 +1047,7 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v){
     //                else
     //                {
     //                    QTextStream * read = new QTextStream(&fileda);
-    //                    QStringList Data = read->readAll().split("\r\n");
+    //                    QStringList Data = read->readAll().split("\n");
     //                    for(int i = 0 ; i < Data.count(); i++)
     //                    {
     //                        QStringList strLine = Data.at(i).split(",");
@@ -1075,7 +1075,7 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v){
     else
     {
         QTextStream * read = new QTextStream(&filenwa);
-        QStringList Data = read->readAll().split("\r\n");
+        QStringList Data = read->readAll().split("\n");
         for(int i = 0 ; i < Data.count(); i++)
         {
             QStringList strLine = Data.at(i).split(",");
@@ -1102,7 +1102,7 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v){
     else
     {
         QTextStream * read = new QTextStream(&filenvpa);
-        QStringList Data = read->readAll().split("\r\n");
+        QStringList Data = read->readAll().split("\n");
         for(int i = 0 ; i < Data.count(); i++)
         {
             QStringList strLine = Data.at(i).split(",");

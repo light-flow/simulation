@@ -54,8 +54,16 @@ int xmlinput::xmlserial(QString inputpath, QList<Node>* list, QVector<QVector<in
                 //存储到links数组中
                 alink.src = reader1.attributes().value("srcNode").toString();
                 alink.dest = reader1.attributes().value("destNode").toString();
+
+                //读写链路长度
+                reader1.readNext();
+                while(!reader1.isStartElement() && !reader1.atEnd() && !reader1.hasError())
+                {
+                    reader1.readNext();
+                }
+                alink.distance = reader1.attributes().value("value").toString();//该链路的长度
                 links.append(alink);
-                //                qDebug()<<alink.src<<" to "<<alink.dest;
+                // qDebug()<<alink.src<<" to "<<alink.dest<<" length: "<<alink.distance;
             }
         }
         reader1.readNext();

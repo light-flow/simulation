@@ -13,7 +13,7 @@ class simdata
 {
 public:
     simdata();
-    int simres(QString projname,QString scenname);
+    int simres(QString projname,QString scenname,QString fibretype,double totaldistance);
 };
 
 #endif // SIMDATA_H
