@@ -52,12 +52,13 @@ void MainWindow::on_import_config_clicked()
     if (!filename.isEmpty()) {
         cout << filename.toStdString() << endl;
         xmlinput x;
-        x.xmlserial(filename, &this->network_nodes, &this->adj);
+                                                                                   //va暂时代替
+        x.xmlserial(filename, &this->network_nodes, &this->adj,&va);                //这里需要增加一个存储路线的二维数组，我暂时用va代替了
         auto it = this->network_nodes.begin();
         for (int i = 0;it != this->network_nodes.end(); ++it,++i) {
             auto node = *it;
             this->ui->current_node->addItem(node.name, i);
-            if (node.model.compare("HTSXZBZ-2_次接驳盒2") != 0) {
+            if (!node.model.contains("次接驳盒") ) {
                 this->ui->current_node->setItemData(i, node.name, Qt::UserRole - 1);
             } else {
                 lastCanEditIndex = i;
@@ -75,7 +76,7 @@ void MainWindow::on_import_config_clicked()
 void MainWindow::on_generate_project_clicked()
 {
     xmloutput output;
-    int flag = output.exportxml(this->network_nodes, this->adj);
+    int flag = output.exportxml(this->network_nodes, this->adj,va,1);                   //暂时填入va和1，va替换成路线的二维矩阵，数字1替换成所选的路线维度，从0开始
     if (flag == 0) {
         QMessageBox::information(this, "导出结果", "导出成功");
     }
@@ -271,7 +272,7 @@ void MainWindow::on_process_result_button_clicked()
          simdata sim;
          auto projectName = spinbox1->text();
          auto scenname = spinbox2->text();
-         if (sim.simres(projectName, scenname) == 0) {
+         if (sim.simres(projectName, scenname,"G.653",this->network_nodes, this->adj,va,1) == 0) {               //这里的"G.653"、va、1需要替换为对应的变量！！！"G.653"是链路介质，va是路线二维矩阵，数字1代表所选的备用路线为第2条
              QMessageBox::information(this, "仿真结果处理", "处理完成");
          } else {
              QMessageBox::information(this, "仿真结果处理", "处理失败");

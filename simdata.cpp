@@ -1,11 +1,19 @@
 #include "simdata.h"
+#include "xmloutput.h"
+#include "xmlinput.h"
 
 simdata::simdata()
 {
 
 }
 
-int simdata::simres(QString projname,QString scenname){
+int simdata::simres(QString projname,QString scenname,QString fibretype,QList<Node> list,QVector<QVector<int>> v, QVector<QVector<int>> va, int routenum){//fibretype光纤类型：G.652（+0.714μs/km）、G.653（5μs/km）、G.655（+0.3125μs/km）
+    //totaldistance链路总长度
+    xmloutput xo;
+    xmlinput xi;
+    v = xo.deleteroute(v,va,routenum);
+    int totaldistance = xi.caltotaldistance(list,v);
+
     QStringList argument;
     QString filePath = QApplication::applicationDirPath() + "\\openetdata.txt";
     QString psName = projname + '-' + scenname;
@@ -33,15 +41,26 @@ int simdata::simres(QString projname,QString scenname){
     // 文件流
     QTextStream streamread(&fileread);
     QTextStream streamwrite(&filewrite);
+
     // 一行一行的读
     while(!streamread.atEnd())
     {
         QString line = streamread.readLine();
 //        int splitindex = line.indexOf("\t");
 //        qDebug()<<line.left(splitindex)<<line.right(line.size()-splitindex-1);
-        if(line.contains("Delay"))
+        if(line.contains("Delay"))//延时数据
         {
-//            double predelay = 0;
+            double difference = totaldistance*(5-3.33)*1e-9;
+            if(fibretype == "G.652") {//传播延时换算
+                difference = difference+totaldistance*0.714e-9;
+            }else if(fibretype == "G.655"){
+                difference = difference+totaldistance*0.3125e-9;
+            }else{
+                difference = difference;
+            }
+            double amplifier = (totaldistance/80000)*0.25e-6;//放大器延时，每80公里一个
+            qDebug()<<difference;
+            double compensation = difference+amplifier+100e-6;//每个设备OTU的100微秒延时
             while(!line.contains("0"))
             {
                 line = streamread.readLine();
@@ -54,10 +73,11 @@ int simdata::simres(QString projname,QString scenname){
                 if(value=="Undefined")
                 {
 //                    double random=QRandomGenerator::global()->bounded(predelay/10);
-                    delay.push_back("0");
+                    delay.push_back(QString::number(compensation));
                 }else
                 {
-                    delay.push_back(value);
+                    compensation = value.toDouble() + compensation;
+                    delay.push_back(QString::number(compensation));
 //                    predelay = value.toDouble();
                 }
                 line = streamread.readLine();
