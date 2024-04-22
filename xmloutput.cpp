@@ -1165,5 +1165,23 @@ QVector<QVector<int>> xmloutput::deleteroute(QVector<QVector<int>> v, QVector<QV
             }
         }
     }
+
+    for(int j=0;j<va.at(routenum).size();j++)
+    {
+        if(j+1<va.at(routenum).size())
+        {
+            i1 = va.at(routenum).at(j);
+            j1 = va.at(routenum).at(j+1);
+            vout1.clear();
+            vout1 = vout.at(i1);
+            vout1.replace(j1,1);
+            vout.replace(i1,vout1);
+            vout1.clear();
+            vout1 = vout.at(j1);
+            vout1.replace(i1,1);
+            vout.replace(j1,vout1);
+        }
+    }
+
     return vout;
 }
