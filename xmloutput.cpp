@@ -5,7 +5,9 @@ xmloutput::xmloutput()
 
 }
 
-int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v){
+int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v, QVector<QVector<int>> va, int routenum){
+    v = deleteroute(v, va, routenum);//删除路线
+
     QFile filewrite(QApplication::applicationDirPath()+"/export.xml");
     if(!filewrite.open(QFile::WriteOnly|QFile::Truncate))
         return 1;
@@ -1122,4 +1124,46 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v){
     filewrite.close();
 
     return 0;
+}
+
+QVector<QVector<int>> xmloutput::deleteroute(QVector<QVector<int>> v, QVector<QVector<int>> va, int routenum)
+{
+    int i1,j1;
+    QVector<QVector<int>> vout;
+    QVector<int> vout1;
+    vout.clear();
+    for(int i = 0;i<v.size();i++)
+    {
+        vout1.clear();
+        for(int j = 0;j<v.at(i).size();j++)
+        {
+            vout1.append(v.at(i).at(j));
+        }
+        vout.append(vout1);
+    }
+
+    if(!routenum)
+    {
+        return vout;
+    }
+    for(int i=0;i<routenum;i++)
+    {
+        for(int j=0;j<va.at(i).size();j++)
+        {
+            if(j+1<va.at(i).size())
+            {
+                i1 = va.at(i).at(j);
+                j1 = va.at(i).at(j+1);
+                vout1.clear();
+                vout1 = vout.at(i1);
+                vout1.replace(j1,0);
+                vout.replace(i1,vout1);
+                vout1.clear();
+                vout1 = vout.at(j1);
+                vout1.replace(i1,0);
+                vout.replace(j1,vout1);
+            }
+        }
+    }
+    return vout;
 }

@@ -56,6 +56,7 @@ protected:
     bool eventFilter(QObject *watched, QEvent *event);
 
 private:
+    QVector<QVector<int>> va;//                                     暂时代替
     Ui::MainWindow *ui;
     QList<Node> network_nodes;
     QVector<QVector<int>> adj;

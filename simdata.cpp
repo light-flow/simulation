@@ -1,13 +1,19 @@
 #include "simdata.h"
 #include "xmloutput.h"
+#include "xmlinput.h"
 
 simdata::simdata()
 {
 
 }
 
-int simdata::simres(QString projname,QString scenname,QString fibretype,double totaldistance){//fibretype光纤类型：G.652（+0.714μs/km）、G.653（5μs/km）、G.655（+0.3125μs/km）
+int simdata::simres(QString projname,QString scenname,QString fibretype,QList<Node> list,QVector<QVector<int>> v, QVector<QVector<int>> va, int routenum){//fibretype光纤类型：G.652（+0.714μs/km）、G.653（5μs/km）、G.655（+0.3125μs/km）
     //totaldistance链路总长度
+    xmloutput xo;
+    xmlinput xi;
+    v = xo.deleteroute(v,va,routenum);
+    int totaldistance = xi.caltotaldistance(list,v);
+
     QStringList argument;
     QString filePath = QApplication::applicationDirPath() + "\\openetdata.txt";
     QString psName = projname + '-' + scenname;
