@@ -74,7 +74,7 @@ private:
     QButtonGroup* dataTypeGroup;
     QButtonGroup* mediumGroup;
     Node * current_edit_node;
-    QString selected_medium;
+    QString selected_medium =  "G.653";;
     int selected_alternate_path = -1;
 };
 #endif // MAINWINDOW_H
