@@ -22,6 +22,8 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->alternate_paths_box->setPlaceholderText(QString("备用路线"));
+    ui->current_node->setPlaceholderText(QString("当前节点"));
     ui->network_widget->installEventFilter(this);
     // 设置不同类型设备的颜色
     this->OTN_Color = QColor(1, 31, 187,160);
@@ -32,12 +34,18 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->protocolGroup = new QButtonGroup(this);
     this->dataTypeGroup = new QButtonGroup(this);
+    this->mediumGroup = new QButtonGroup(this);
+
     this->protocolGroup->addButton(this->ui->tcp_protocol, 0);
     this->protocolGroup->addButton(this->ui->udp_protocol, 1);
     this->dataTypeGroup->addButton(this->ui->war_message, 0);
     this->dataTypeGroup->addButton(this->ui->voice_message, 1);
     this->dataTypeGroup->addButton(this->ui->image_message, 2);
     this->dataTypeGroup->addButton(this->ui->video_message, 3);
+    this->mediumGroup->addButton(this->ui->medium_653, 0);
+    this->mediumGroup->addButton(this->ui->medium_652, 1);
+    this->mediumGroup->addButton(this->ui->medium_655, 2);
+
 }
 
 MainWindow::~MainWindow()
@@ -53,7 +61,7 @@ void MainWindow::on_import_config_clicked()
         cout << filename.toStdString() << endl;
         xmlinput x;
                                                                                    //va暂时代替
-        x.xmlserial(filename, &this->network_nodes, &this->adj,&va);                //这里需要增加一个存储路线的二维数组，我暂时用va代替了
+        x.xmlserial(filename, &this->network_nodes, &this->adj,&alternate_paths);                //这里需要增加一个存储路线的二维数组，我暂时用va代替了
         auto it = this->network_nodes.begin();
         for (int i = 0;it != this->network_nodes.end(); ++it,++i) {
             auto node = *it;
@@ -63,7 +71,12 @@ void MainWindow::on_import_config_clicked()
             } else {
                 lastCanEditIndex = i;
             }
-            cout << node.model.toStdString() <<endl;
+        }
+        // 当有备用路线时，将备用路线加入对应的下拉框
+        auto size = alternate_paths.size();
+        if (size != 0) {
+            for (int i = 1; i <= size; i++)
+                ui->alternate_paths_box->addItem(QString("备用路线 %1").arg(i));
         }
     }
     if (lastCanEditIndex != -1) {
@@ -76,13 +89,14 @@ void MainWindow::on_import_config_clicked()
 void MainWindow::on_generate_project_clicked()
 {
     xmloutput output;
-    int flag = output.exportxml(this->network_nodes, this->adj,va,1);                   //暂时填入va和1，va替换成路线的二维矩阵，数字1替换成所选的路线维度，从0开始
+    int flag = output.exportxml(this->network_nodes, this->adj,alternate_paths,
+                                selected_alternate_path == -1 ? 0 : selected_alternate_path);                   //暂时填入va和1，va替换成路线的二维矩阵，数字1替换成所选的路线维度，从0开始
     if (flag == 0) {
         QMessageBox::information(this, "导出结果", "导出成功");
     }
 }
 
-void MainWindow::paint_network(QList<Node> nodes)
+void MainWindow::paint_network(QList<Node> nodes, int alter_path_index)
 {
      if (nodes.isEmpty()) return;
      auto width = this->ui->network_widget->width();
@@ -121,7 +135,7 @@ void MainWindow::paint_network(QList<Node> nodes)
         painter.setFont(QFont("Consolas",8));
         QPoint tc(c.x()-20,c.y()+20);
         painter.drawText(tc, nodes[i].name);
-         cout << 3 <<endl;
+
      }
 
      painter.setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap));
@@ -133,9 +147,21 @@ void MainWindow::paint_network(QList<Node> nodes)
         for (int j = 0; j < this->adj[0].size(); j++) {
             if (this->adj[i][j] == 1) {
                 painter.drawLine(points[i], points[j]);
-                cout << 4 <<endl;
             }
         }
+     }
+
+     // 绘制备用路径
+     painter.setPen(QPen(Qt::red, 3,Qt::SolidLine, Qt::RoundCap));
+     painter.setRenderHint(QPainter::Antialiasing);
+     painter.setBrush(Qt::red);
+     if (alter_path_index != -1) {
+         auto path = alternate_paths[alter_path_index];
+         for (int i = 0; i < path.size() - 1; i++) {
+             int from = path[i];
+             int to = path[i + 1];
+             painter.drawLine(points[from], points[to]);
+         }
      }
 
      // 绘制图例
@@ -170,7 +196,7 @@ void MainWindow::paint_network(QList<Node> nodes)
      painter.setPen(pen);
      painter.setFont(QFont("Consolas",10));
      painter.drawText(QPoint(50, 95), "OTN设备");
-     cout << 5 <<endl;
+
 
 }
 
@@ -179,7 +205,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
      if (watched == ui->network_widget
          && event->type() == QEvent::Paint
          && !this->network_nodes.isEmpty()) {
-        paint_network(this->network_nodes);
+        paint_network(this->network_nodes, this->selected_alternate_path);
      }
      return true;
 }
@@ -194,6 +220,7 @@ void MainWindow::set_panel(Node node)
      this->ui->current_node_name->setText(node.name);
      this->protocolGroup->button(node.protocol)->setChecked(true);
      this->dataTypeGroup->button(node.dataType)->setChecked(true);
+     this->mediumGroup->button(0)->setChecked(true);
      this->ui->dataAmountEdit->setText(node.dataAmount);
      this->ui->XPosition_label->setText(node.xPosition);
      this->ui->YPosition_label->setText(node.yPosition);
@@ -272,14 +299,17 @@ void MainWindow::on_process_result_button_clicked()
          simdata sim;
          auto projectName = spinbox1->text();
          auto scenname = spinbox2->text();
-         if (sim.simres(projectName, scenname,"G.653",this->network_nodes, this->adj,va,1) == 0) {               //这里的"G.653"、va、1需要替换为对应的变量！！！"G.653"是链路介质，va是路线二维矩阵，数字1代表所选的备用路线为第2条
+         if (sim.simres(projectName, scenname, selected_medium, this->network_nodes,
+                        this->adj, alternate_paths, selected_alternate_path) == 0)
+         {
              QMessageBox::information(this, "仿真结果处理", "处理完成");
+             lineGraphWidget* w = new lineGraphWidget();
+             w->show();
          } else {
              QMessageBox::information(this, "仿真结果处理", "处理失败");
          }
      }
-     lineGraphWidget* w = new lineGraphWidget();
-     w->show();
+
 
 }
 
@@ -288,5 +318,30 @@ void MainWindow::onDataAmountEditTextChanged(const QString &arg1)
 {
     this->current_edit_node->dataAmount = arg1;
     cout << "sucess" << endl;
+}
+
+
+void MainWindow::on_medium_653_clicked()
+{
+    this->selected_medium = "G.653";
+}
+
+
+void MainWindow::on_medium_652_clicked()
+{
+     this->selected_medium = "G.652";
+}
+
+
+void MainWindow::on_medium_655_clicked()
+{
+    this->selected_medium = "G.655";
+}
+
+
+void MainWindow::on_alternate_paths_box_currentIndexChanged(int index)
+{
+    this->selected_alternate_path = index < alternate_paths.size() ? index : -1;
+    this->ui->network_widget->update();
 }
 
