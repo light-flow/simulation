@@ -14,7 +14,7 @@ class simdata
 {
 public:
     simdata();
-    int simres(QString projname,QString scenname,QString fibretype,QList<Node> list,QVector<QVector<int>> v, QVector<QVector<int>> va, int routenum);
+    int simres(QString projname,QString scenname,QString fibretype,QList<Node> list,QVector<QVector<int>> v, QVector<QVector<int>> va, int routenum,QVector<link> links);
 };
 
 #endif // SIMDATA_H

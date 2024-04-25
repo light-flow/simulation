@@ -61,7 +61,7 @@ void MainWindow::on_import_config_clicked()
         cout << filename.toStdString() << endl;
         xmlinput x;
                                                                                    //va暂时代替
-        x.xmlserial(filename, &this->network_nodes, &this->adj,&alternate_paths);                //这里需要增加一个存储路线的二维数组，我暂时用va代替了
+        x.xmlserial(filename, &this->network_nodes, &this->adj,&alternate_paths,&links);                //这里需要增加一个存储路线的二维数组，我暂时用va代替了
         auto it = this->network_nodes.begin();
         for (int i = 0;it != this->network_nodes.end(); ++it,++i) {
             auto node = *it;
@@ -300,7 +300,7 @@ void MainWindow::on_process_result_button_clicked()
          auto projectName = spinbox1->text();
          auto scenname = spinbox2->text();
          if (sim.simres(projectName, scenname, selected_medium, this->network_nodes,
-                        this->adj, alternate_paths, selected_alternate_path == -1 ? 0 : selected_alternate_path) == 0)
+                        this->adj, alternate_paths, selected_alternate_path == -1 ? 0 : selected_alternate_path,links) == 0)
          {
              QMessageBox::information(this, "仿真结果处理", "处理完成");
              lineGraphWidget* w = new lineGraphWidget();

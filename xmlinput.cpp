@@ -6,10 +6,10 @@ xmlinput::xmlinput()
 }
 
 //xml导入分析函数（inputpath为导入xml文件的路径，list为存储节点属性的列表，v为邻接矩阵，va为备用路线二维矩阵）
-int xmlinput::xmlserial(QString inputpath, QList<Node>* list, QVector<QVector<int>>* v, QVector<QVector<int>>* va)
+int xmlinput::xmlserial(QString inputpath, QList<Node>* list, QVector<QVector<int>>* v, QVector<QVector<int>>* va,QVector<link>* links)
 {
     //读xml文件
-    links.clear();
+    links->clear();
     list->clear();
     v->clear();
     va->clear();
@@ -70,7 +70,7 @@ int xmlinput::xmlserial(QString inputpath, QList<Node>* list, QVector<QVector<in
                     reader1.readNext();
                 }
                 alink.distance = reader1.attributes().value("value").toString();//该链路的长度
-                links.append(alink);
+                links->append(alink);
                 // qDebug()<<alink.src<<" to "<<alink.dest<<" length: "<<alink.distance;
 
                 reader1.readNext();
@@ -116,9 +116,15 @@ int xmlinput::xmlserial(QString inputpath, QList<Node>* list, QVector<QVector<in
         v->append(v1);
     }
 
+    QVector<link> links1;
+    for(int i=0;i<links->size();i++)
+    {
+        links1.append(links->at(i));
+    }
+
     //遍历连线，生成二维邻接矩阵
     int i,j;
-    foreach (link lin, links)
+    foreach (link lin, links1)
     {
         i = l1.indexOf(lin.src);
         j = l1.indexOf(lin.dest);
@@ -158,7 +164,7 @@ int xmlinput::xmlserial(QString inputpath, QList<Node>* list, QVector<QVector<in
 
 }
 
-double xmlinput::caltotaldistance(QList<Node> list,QVector<QVector<int>> v)//计算总距离
+double xmlinput::caltotaldistance(QList<Node> list,QVector<QVector<int>> v,QVector<link> links)//计算总距离
 {
     if(links.isEmpty()||v.isEmpty())
     {

@@ -66,6 +66,8 @@ protected:
 private:
     // 备用路线，可能有多条
     QVector<QVector<int>> alternate_paths;
+    //存储链路长度的
+    QVector<link> links;
 
     Ui::MainWindow *ui;
     QList<Node> network_nodes;
