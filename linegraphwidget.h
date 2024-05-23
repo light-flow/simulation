@@ -25,6 +25,8 @@ public:
     QChart* getVoiceThrChart();
     QChart* getVideoThrChart();
     QChart* getImageThrChart();
+    QChart* getThrBarChart();
+    QChart* getLatencyScatterChart();
     QChartView* cview;
 
 public slots:
@@ -36,6 +38,8 @@ public slots:
     void onVoiceBthClick();
     void onVideoBthClick();
     void onImageBthClick();
+    void onLatencyScatterBtnClick();
+    void onThrBarBthClick();
 };
 
 #endif // LINEGRAPHWIDGET_H

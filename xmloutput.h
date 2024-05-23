@@ -12,9 +12,7 @@ class xmloutput
 {
 public:
     xmloutput();
-    int exportxml(QList<Node> list, QVector<QVector<int>> v, QVector<QVector<int>> va, int routenum);
-    QVector<QVector<int>> deleteroute(QVector<QVector<int>> v, QVector<QVector<int>> va, int routenum);//删除链路
-
+    int exportxml(QList<Node> list, QVector<QVector<int>> v);
 private:
     QVector<int> v1;
     QString traffic;
