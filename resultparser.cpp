@@ -53,6 +53,7 @@ int resultparser::parserTxtRes(QString filePath,
     // 计算抖动
     auto seqLen = latencySeries->size();
     double max = INT_MIN, min = INT_MAX, sum = 0;
+    double fir = latencySeries->at(0);
     for (int i = 0; i < seqLen; i++) {
         max = max < latencySeries->at(i) ? latencySeries->at(i) : max;
         if(latencySeries->at(i)>0)
@@ -61,10 +62,12 @@ int resultparser::parserTxtRes(QString filePath,
         }
         sum += latencySeries->at(i);
     }
-    double bounce = max - min, mean = sum/seqLen;
+    double bounce = max - min;
+//    double mean = sum/seqLen;
     for (int i = 0; i < seqLen; i++) {
         dithering->append(bounce);
-        convergence->append(mean);
+//        convergence->append(mean);
+        convergence->append(fir);
     }
     return 0;
 }

@@ -7,18 +7,19 @@
 #include <QtXml>
 #include "node.h"
 
-extern QString path;
-
 class xmlinput
 {
 public:
     xmlinput();
-    int xmlserial(QString inputpath, QList<Node>* list, QVector<QVector<int>>* v, QVector<QVector<int>>* va,QVector<link>* links);
-
-    double caltotaldistance(QList<Node> list,QVector<QVector<int>> v,QVector<link> links);//计算总长度
+    int xmlserial(QString inputpath, QList<Node>* list, QVector<QVector<int>>* v);
 
 private:
+    struct link{
+        QString src;
+        QString dest;
+    };
     link alink;
+    QVector<link> links;
 };
 
 #endif // XMLINPUT_H

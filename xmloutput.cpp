@@ -5,9 +5,7 @@ xmloutput::xmloutput()
 
 }
 
-int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v, QVector<QVector<int>> va, int routenum){
-    v = deleteroute(v, va, routenum);//删除路线
-
+int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v){
     QFile filewrite(QApplication::applicationDirPath()+"/export.xml");
     if(!filewrite.open(QFile::WriteOnly|QFile::Truncate))
         return 1;
@@ -26,7 +24,7 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v, QVector<QVec
     int countapp = 0;
     foreach(Node n,list)
     {
-        if(n.model.contains("次接驳盒"))
+        if(n.model.contains("次接驳盒")||n.model.contains("预警探测光纤阵")||n.model.contains("UUV支持节点")||n.model.contains("海洋观测节点")||n.model.contains("水声通信节点")||n.model.contains("YW")||n.model.contains("浮标"))//业务节点
         {
             countapp++;
         }
@@ -67,7 +65,7 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v, QVector<QVec
     int counta = 0;
     foreach(Node n,list)
     {
-        if(n.model.contains("次接驳盒"))
+        if(n.model.contains("次接驳盒")||n.model.contains("预警探测光纤阵")||n.model.contains("UUV支持节点")||n.model.contains("海洋观测节点")||n.model.contains("水声通信节点")||n.model.contains("YW")||n.model.contains("浮标"))
         {
             switch (n.dataType) {
             case Message:
@@ -588,7 +586,7 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v, QVector<QVec
             writer.writeAttribute("name","icon name");
             writer.writeAttribute("value","spl");
             writer.writeEndElement();
-        }else if(n.model.contains("岸站OTN设备"))
+        }else if(n.model.contains("OTN"))
         {
             writer.writeStartElement("node");
             writer.writeAttribute("name","server");
@@ -709,7 +707,7 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v, QVector<QVec
             writer.writeAttribute("name","icon name");
             writer.writeAttribute("value","otn");
             writer.writeEndElement();
-        }else if(n.model.contains("次接驳盒"))
+        }else if(n.model.contains("次接驳盒")||n.model.contains("预警探测光纤阵")||n.model.contains("UUV支持节点")||n.model.contains("海洋观测节点")||n.model.contains("水声通信节点")||n.model.contains("YW")||n.model.contains("浮标"))
         {
             writer.writeStartElement("node");
             writer.writeAttribute("name","client");
@@ -842,8 +840,52 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v, QVector<QVec
             writer.writeEndElement();
 
             counta++;
-        }
+        }else//默认为分支器
+        {
+            writer.writeStartElement("node");
+            writer.writeAttribute("name","switch");
+            writer.writeAttribute("model","ethernet16_switch");
+            writer.writeAttribute("ignore_questions","true");
+            writer.writeAttribute("min_match_score","strict matching");
 
+            //node的子标签
+            //写x、y坐标
+            writer.writeStartElement("attr");
+            writer.writeAttribute("name","x position");
+            writer.writeAttribute("value",n.xPosition);
+            writer.writeEndElement();
+            writer.writeStartElement("attr");
+            writer.writeAttribute("name","y position");
+            writer.writeAttribute("value",n.yPosition);
+            writer.writeEndElement();
+            //非坐标类子标签，直接从csv文件中导入
+            QFile filesa(":/model/model/switchAttribute.csv");
+            if(!filesa.open(QIODevice::ReadOnly))
+            {
+                qDebug()<<QStringLiteral("请正确选择csv文件");
+            }
+            else
+            {
+                QTextStream * read = new QTextStream(&filesa);
+                QStringList Data = read->readAll().split("\n");
+                for(int i = 2 ; i < Data.count(); i++)
+                {
+                    QStringList strLine = Data.at(i).split(",");
+                    writer.writeStartElement("attr");
+                    writer.writeAttribute("name",strLine[0]);
+                    writer.writeAttribute("value",strLine[1]);
+                    writer.writeEndElement();
+                }
+                delete read;
+            }
+            writer.writeEndElement();
+            filesa.close();
+
+            writer.writeStartElement("attr");
+            writer.writeAttribute("name","icon name");
+            writer.writeAttribute("value","spl");
+            writer.writeEndElement();
+        }
         writer.writeStartElement("attr");
         writer.writeAttribute("name","x position");
         writer.writeAttribute("value",n.xPosition);
@@ -1124,64 +1166,4 @@ int xmloutput::exportxml(QList<Node> list, QVector<QVector<int>> v, QVector<QVec
     filewrite.close();
 
     return 0;
-}
-
-QVector<QVector<int>> xmloutput::deleteroute(QVector<QVector<int>> v, QVector<QVector<int>> va, int routenum)
-{
-    int i1,j1;
-    QVector<QVector<int>> vout;
-    QVector<int> vout1;
-    vout.clear();
-    for(int i = 0;i<v.size();i++)
-    {
-        vout1.clear();
-        for(int j = 0;j<v.at(i).size();j++)
-        {
-            vout1.append(v.at(i).at(j));
-        }
-        vout.append(vout1);
-    }
-
-    if(!routenum)
-    {
-        return vout;
-    }
-    for(int i=0;i<routenum;i++)
-    {
-        for(int j=0;j<va.at(i).size();j++)
-        {
-            if(j+1<va.at(i).size())
-            {
-                i1 = va.at(i).at(j);
-                j1 = va.at(i).at(j+1);
-                vout1.clear();
-                vout1 = vout.at(i1);
-                vout1.replace(j1,0);
-                vout.replace(i1,vout1);
-                vout1.clear();
-                vout1 = vout.at(j1);
-                vout1.replace(i1,0);
-                vout.replace(j1,vout1);
-            }
-        }
-    }
-
-    for(int j=0;j<va.at(routenum).size();j++)
-    {
-        if(j+1<va.at(routenum).size())
-        {
-            i1 = va.at(routenum).at(j);
-            j1 = va.at(routenum).at(j+1);
-            vout1.clear();
-            vout1 = vout.at(i1);
-            vout1.replace(j1,1);
-            vout.replace(i1,vout1);
-            vout1.clear();
-            vout1 = vout.at(j1);
-            vout1.replace(i1,1);
-            vout.replace(j1,vout1);
-        }
-    }
-
-    return vout;
 }

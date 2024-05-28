@@ -1,32 +1,15 @@
 #include "simdata.h"
-#include "xmloutput.h"
-#include "xmlinput.h"
 
 simdata::simdata()
 {
 
 }
 
-int simdata::simres(QString projname,QString scenname,QString fibretype,QList<Node> list,QVector<QVector<int>> v, QVector<QVector<int>> va, int routenum,QVector<link> links){//fibretype光纤类型：G.652（+0.714μs/km）、G.653（5μs/km）、G.655（+0.3125μs/km）
-    //totaldistance链路总长度
-    xmloutput xo;
-    xmlinput xi;
-    v = xo.deleteroute(v,va,routenum);//删除非备用路线
-    double totaldistance = xi.caltotaldistance(list,v,links);//计算总距离
-
-    //保护倒换
-    double trans = 0;
-    if(routenum)
-    {
-        trans = 0.05;
-    }
-
-//    qDebug()<<trans;
-
+int simdata::simres(QString projname,QString scenname){
     QStringList argument;
-    QString filePath = QApplication::applicationDirPath() + "\\openetdata.txt";//仿真结果文件路径
+    QString filePath = QApplication::applicationDirPath() + "\\openetdata.txt";
     QString psName = projname + '-' + scenname;
-    argument << "/c" <<"op_cvov" << "-output_file_path" << filePath << "-verbose" << "TRUE" << "-vector_data" << "-vector_data_format" << "H" << "-m" << psName;//cmd导出仿真结果
+    argument << "/c" <<"op_cvov" << "-output_file_path" << filePath << "-verbose" << "TRUE" << "-vector_data" << "-vector_data_format" << "H" << "-m" << psName;
     QProcess process(0);
     process.setProgram("cmd");
     process.setArguments(argument);
@@ -34,10 +17,10 @@ int simdata::simres(QString projname,QString scenname,QString fibretype,QList<No
     process.waitForStarted(); //等待程序启动
     process.waitForFinished();//等待程序关闭
 
-    QVector<QString> time,delay,retrap,setrap,retravc,setravc,retrae,setrae,retrav,setrav;//仿真结果的每一项单独处理
+    QVector<QString> time,delay,retrap,setrap,retravc,setravc,retrae,setrae,retrav,setrav;
     // 读取文件位置
     QFile fileread(filePath);
-    QFile filewrite(QApplication::applicationDirPath() + "/simulation_result.txt");//处理后的仿真结果存储路径
+    QFile filewrite(QApplication::applicationDirPath() + "/simulation_result.txt");
 
     if(!fileread.open(QIODevice::ReadOnly))
     {
@@ -50,27 +33,16 @@ int simdata::simres(QString projname,QString scenname,QString fibretype,QList<No
     // 文件流
     QTextStream streamread(&fileread);
     QTextStream streamwrite(&filewrite);
-
     // 一行一行的读
     while(!streamread.atEnd())
     {
         QString line = streamread.readLine();
 //        int splitindex = line.indexOf("\t");
 //        qDebug()<<line.left(splitindex)<<line.right(line.size()-splitindex-1);
-        if(line.contains("Delay"))//延时数据
+        if(line.contains("Delay"))
         {
-            double difference = totaldistance*(5-3.33)*1e-9;
-            if(fibretype == "G.652") {//传播延时换算（根据介质速率换算）
-                difference = difference+totaldistance*0.714*1e-9;
-            }else if(fibretype == "G.655"){
-                difference = difference+totaldistance*0.3125*1e-9;
-            }else{
-                difference = difference;
-            }
-            double amplifier = (totaldistance/80000)*0.25*1e-6;//放大器延时，每80公里一个
-//            qDebug()<<difference;
-            double compensation = difference+amplifier+trans+100*1e-6;//每个设备OTU的100微秒延时
-            while(!line.contains("0"))//从0时开始
+//            double predelay = 0;
+            while(!line.contains("0"))
             {
                 line = streamread.readLine();
             }
@@ -82,16 +54,15 @@ int simdata::simres(QString projname,QString scenname,QString fibretype,QList<No
                 if(value=="Undefined")
                 {
 //                    double random=QRandomGenerator::global()->bounded(predelay/10);
-                    delay.push_back(QString::number(compensation));
+                    delay.push_back("0");
                 }else
                 {
-                    compensation = value.toDouble() + compensation;
-                    delay.push_back(QString::number(compensation));
+                    delay.push_back(value);
 //                    predelay = value.toDouble();
                 }
                 line = streamread.readLine();
             }
-        }else if(line.contains("Print.Traffic Received"))//print类型的收traffic
+        }else if(line.contains("Print.Traffic Received"))
         {
             while(!line.contains("0"))
             {
@@ -197,9 +168,17 @@ int simdata::simres(QString projname,QString scenname,QString fibretype,QList<No
             }
         }
     }
-    //做成表格的形式
     streamwrite<<"time"<<"\t"<<"delay"<<"\t"<<"throughoutput"<<"\t"<<"message.throughoutput"<<"\t"<<"voice.throughoutput"<<"\t"<<"video.throughoutput"<<"\t"<<"print.throughoutput"<<"\t"<<"\n";
+
+    double delaytotal = 0, throutotal = 0, delaymax = INT_MIN, delaymin = INT_MAX;
+
     for (int i = 0; i < time.size(); ++i) {
+        delaymax = delaymax < delay.at(i).toFloat()?delay.at(i).toFloat():delaymax;
+        if(delay.at(i).toFloat()>0)
+        {
+            delaymin = delaymin > delay.at(i).toFloat()?delay.at(i).toFloat():delaymin;
+        }
+        delaytotal += delay.at(i).toFloat();
         double messagere = retrae.at(i).toFloat();
         double messagese = setrae.at(i).toFloat();
         double message = messagere + messagese;
@@ -213,8 +192,50 @@ int simdata::simres(QString projname,QString scenname,QString fibretype,QList<No
         double printse = setrap.at(i).toFloat();
         double print = printre + printse;
         double throughoutput = message + voice + video + print;
+        throutotal += throughoutput;
         streamwrite<<time.at(i)<<"\t"<<delay.at(i)<<"\t"<<throughoutput<<"\t"<<message<<"\t"<<voice<<"\t"<<video<<"\t"<<print<<"\n";
     }
+
+    QXlsx::Document xlsx;//操作Excel
+
+    QXlsx::Format boldFormat;
+    boldFormat.setFontBold(true);//加粗
+
+    //写Excel
+    xlsx.write("A1", "序号",boldFormat);
+    xlsx.write("B1", "评价项目",boldFormat);
+    xlsx.write("C1", "值(2位有效小数)",boldFormat);
+    xlsx.write("D1", "单位",boldFormat);
+    xlsx.write("E1", "参数id",boldFormat);
+
+    xlsx.write("A2", "1");
+    xlsx.write("B2", "网络收敛时间");
+    xlsx.write("C2", QString::number((delay.at(0).toFloat())*1000, 'f', 2));
+    xlsx.write("D2", "ms");
+    xlsx.write("E2", "1");
+
+    xlsx.write("A3", "2");
+    xlsx.write("B3", "网络延时");
+    xlsx.write("C3", QString::number((delaytotal/time.size())*1000, 'f', 2));
+    xlsx.write("D3", "ms");
+    xlsx.write("E3", "2");
+
+    xlsx.write("A4", "3");
+    xlsx.write("B4", "网络抖动");
+    xlsx.write("C4", QString::number((delaymax - delaymin)*1000, 'f', 2));
+    xlsx.write("D4", "ms");
+    xlsx.write("E4", "3");
+
+    xlsx.write("A5", "4");
+    xlsx.write("B5", "网络吞吐量");
+    xlsx.write("C5", QString::number(throutotal/time.size(), 'f', 2));
+    xlsx.write("D5", "bps");
+    xlsx.write("E5", "4");
+
+    xlsx.saveAs(QApplication::applicationDirPath()+"/export.xlsx");//保存
+    qDebug()<<"export.xlsx生成完毕";
+
+
     fileread.close();
     filewrite.close();
     qDebug()<<"simulation_result.txt生成完毕";

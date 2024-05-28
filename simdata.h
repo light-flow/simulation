@@ -8,13 +8,13 @@
 #include <QApplication>
 #include <QProcess>
 #include <QRandomGenerator>
-#include "node.h"
+#include "xlsxdocument.h"
 
 class simdata
 {
 public:
     simdata();
-    int simres(QString projname,QString scenname,QString fibretype,QList<Node> list,QVector<QVector<int>> v, QVector<QVector<int>> va, int routenum,QVector<link> links);
+    int simres(QString projname,QString scenname);
 };
 
 #endif // SIMDATA_H
