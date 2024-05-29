@@ -142,36 +142,43 @@ void MainWindow::paint_network(QList<Node> nodes)
      // 绘制图例
      QPen pen(QColor(54, 52, 51));
      pen.setWidth(4);
-     painter.setPen(QPen(MainConnect_Color, 3, Qt::SolidLine, Qt::RoundCap));
-     painter.drawLine(QPoint(10, 10), QPoint(40, 10));
+     painter.setBrush(QBrush(this->MainConnect_Color));
+     painter.setPen(QPen(MainConnect_Color));
+     // painter.drawLine(QPoint(10, 10), QPoint(40, 10));
+     painter.drawEllipse(QPoint(25, 10), 8, 8);
      painter.setPen(pen);
      painter.setFont(QFont("Consolas",10));
-     painter.drawText(QPoint(50, 15), "主接驳盒");
+     painter.drawText(QPoint(40, 15), "主接驳盒");
 
-     painter.setPen(QPen(SecondConnect_Color, 3, Qt::SolidLine, Qt::RoundCap));
-     painter.drawLine(QPoint(10, 30), QPoint(40, 30));
+     painter.setBrush(QBrush(this->SecondConnect_Color));
+     painter.setPen(QPen(SecondConnect_Color));
+     // painter.drawLine(QPoint(10, 30), QPoint(40, 30));
+     painter.drawEllipse(QPoint(25, 30), 8, 8);
      painter.setPen(pen);
      painter.setFont(QFont("Consolas",10));
-     painter.drawText(QPoint(50, 35), "业务节点");//次接驳盒改称为业务节点
+     painter.drawText(QPoint(40, 35), "业务节点");//次接驳盒改称为业务节点
 
-     painter.setPen(QPen(PowerControl_Color, 3, Qt::SolidLine, Qt::RoundCap));
-     painter.drawLine(QPoint(10, 50), QPoint(40, 50));
+     painter.setBrush(QBrush(this->PowerControl_Color));
+     painter.setPen(QPen(PowerControl_Color));
+     painter.drawEllipse(QPoint(25, 50), 8, 8);
      painter.setPen(pen);
      painter.setFont(QFont("Consolas",10));
-     painter.drawText(QPoint(50, 55), "高功率放大器");
+     painter.drawText(QPoint(40, 55), "高功率放大器");
 
-     painter.setPen(QPen(Branch_Color, 3, Qt::SolidLine, Qt::RoundCap));
-     painter.drawLine(QPoint(10, 70), QPoint(40, 70));
+     painter.setBrush(QBrush(this->Branch_Color));
+     painter.setPen(QPen(Branch_Color));
+     painter.drawEllipse(QPoint(25, 70), 8, 8);
      painter.setPen(pen);
      painter.setFont(QFont("Consolas",10));
-     painter.drawText(QPoint(50, 75), "分支器");
+     painter.drawText(QPoint(40, 75), "分支器");
 
-     painter.setPen(QPen(OTN_Color, 3, Qt::SolidLine, Qt::RoundCap));
-     painter.drawLine(QPoint(10, 90), QPoint(40, 90));
+     painter.setBrush(QBrush(this->OTN_Color));
+     painter.setPen(QPen(OTN_Color));
+     painter.drawEllipse(QPoint(25, 90), 8, 8);
      painter.setPen(pen);
      painter.setFont(QFont("Consolas",10));
-     painter.drawText(QPoint(50, 95), "OTN设备");
-     cout << 5 <<endl;
+     painter.drawText(QPoint(40, 95), "OTN设备");
+
 
 }
 
