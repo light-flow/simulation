@@ -281,14 +281,13 @@ void MainWindow::on_process_result_button_clicked()
          auto projectName = spinbox1->text();
          auto scenname = spinbox2->text();
          if (sim.simres(projectName, scenname) == 0) {
-             QMessageBox::information(this, "仿真结果处理", "处理完成");
+            QMessageBox::information(this, "仿真结果处理", "处理完成");
+            lineGraphWidget* w = new lineGraphWidget();
+            w->show();
          } else {
              QMessageBox::information(this, "仿真结果处理", "处理失败");
          }
      }
-     lineGraphWidget* w = new lineGraphWidget();
-     w->show();
-
 }
 
 
