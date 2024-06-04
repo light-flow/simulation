@@ -5,6 +5,7 @@
 #include <QList>
 #include "node.h"
 #include <Qvector>
+#include <QMessageBox>
 #include <QButtonGroup>
 
 QT_BEGIN_NAMESPACE
@@ -54,6 +55,7 @@ private slots:
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event);
+    QMessageBox* getMessageBox(QWidget *parent, QString title, QString text);
 
 private:
     Ui::MainWindow *ui;

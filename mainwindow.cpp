@@ -6,7 +6,6 @@
 #include <iostream>
 #include <QPainter>
 #include <QFileDialog>
-#include <QMessageBox>
 #include <QDialog>
 #include "xmloutput.h"
 #include <QFormLayout>
@@ -22,7 +21,16 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    QString button_style = "background-color: rgb(6, 72, 120);color:white;border-radius: 4px;";
+    // 设置按钮样式
+    ui->import_config->setStyleSheet(button_style);
+    ui->generate_project->setStyleSheet(button_style);
+    ui->process_result_button->setStyleSheet(button_style);
+    // 设置下拉框样式
+    ui->current_node->setStyleSheet(button_style);
     ui->network_widget->installEventFilter(this);
+    ui->network_widget->setStyleSheet("background-color: rgb(255, 255, 255);color: white;hight:200px;width:300px");
+    ui->network_widget->update();
     // 设置不同类型设备的颜色
     this->OTN_Color = QColor(1, 31, 187,160);
     this->MainConnect_Color = QColor(1, 131, 250,150);
@@ -77,7 +85,9 @@ void MainWindow::on_generate_project_clicked()
     xmloutput output;
     int flag = output.exportxml(this->network_nodes, this->adj);
     if (flag == 0) {
-        QMessageBox::information(this, "导出结果", "导出成功");
+        auto box = getMessageBox(this, "导出结果", "导出成功");
+        box->exec();
+        // QMessageBox::information(this, "导出结果", "导出成功");
     }
 }
 
@@ -116,7 +126,7 @@ void MainWindow::paint_network(QList<Node> nodes)
         }
         painter.setPen(QPen(QColor(255,255,255,0)));
         painter.drawEllipse(c, 15, 15);
-        QPen pen(QColor(54, 52, 51));
+        QPen pen(QColor(255, 255, 255));
         pen.setWidth(4);
         painter.setPen(pen);
         painter.setFont(QFont("Consolas",8));
@@ -140,7 +150,7 @@ void MainWindow::paint_network(QList<Node> nodes)
      }
 
      // 绘制图例
-     QPen pen(QColor(54, 52, 51));
+     QPen pen(QColor(255, 255, 255));
      pen.setWidth(4);
      painter.setBrush(QBrush(this->MainConnect_Color));
      painter.setPen(QPen(MainConnect_Color));
@@ -260,6 +270,7 @@ void MainWindow::on_process_result_button_clicked()
 {
      QDialog dialog(this);
      dialog.setWindowTitle("仿真结果处理");
+     dialog.setStyleSheet("color: white;");
      QFormLayout form(&dialog);
      form.addRow(new QLabel("请输入项目名与场景名"));
      // Value1
@@ -273,6 +284,7 @@ void MainWindow::on_process_result_button_clicked()
      // Add Cancel and OK button
      QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
                                 Qt::Horizontal, &dialog);
+     buttonBox.setStyleSheet("background-color: rgb(6, 72, 120);color:white;border-radius: 1px;");
      form.addRow(&buttonBox);
      QObject::connect(&buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
      QObject::connect(&buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
@@ -281,13 +293,20 @@ void MainWindow::on_process_result_button_clicked()
          auto projectName = spinbox1->text();
          auto scenname = spinbox2->text();
          if (sim.simres(projectName, scenname) == 0) {
-             QMessageBox::information(this, "仿真结果处理", "处理完成");
+             // QMessageBox::information(this, "仿真结果处理", "处理完成");
+             auto box = getMessageBox(this, "仿真结果处理", "处理完成");
+             box->exec();
+             lineGraphWidget* w = new lineGraphWidget();
+             w->show();
          } else {
-             QMessageBox::information(this, "仿真结果处理", "处理失败");
+             // QMessageBox::information(this, "仿真结果处理", "处理失败");
+             auto box = getMessageBox(this, "仿真结果处理", "处理失败");
+             box->exec();
+             lineGraphWidget* w = new lineGraphWidget();
+             w->show();
          }
      }
-     lineGraphWidget* w = new lineGraphWidget();
-     w->show();
+
 
 }
 
@@ -298,3 +317,17 @@ void MainWindow::onDataAmountEditTextChanged(const QString &arg1)
     cout << "sucess" << endl;
 }
 
+QMessageBox* MainWindow::getMessageBox(QWidget *parent, QString title, QString text)
+{
+    QMessageBox* box = new QMessageBox(parent);
+    QPushButton* okbtn = new QPushButton("Ok");
+    okbtn->setStyleSheet("background-color: rgb(6, 72, 120);color:white;border-radius: 1px;");
+    QString styleStr = "color: white;";
+    box->setWindowTitle(title);
+    box->setText(text);
+    box->setStyleSheet(styleStr);
+    box->addButton(okbtn, QMessageBox::AcceptRole);
+    // box.addButton("OK", QMessageBox::AcceptRole);
+    // box.addButton("Cancel", QMessageBox::RejectRole);
+    return box;
+}

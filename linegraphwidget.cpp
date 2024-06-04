@@ -19,6 +19,7 @@ lineGraphWidget::lineGraphWidget(QWidget* parent): QWidget(parent) {
     this->setWindowModality(Qt::NonModal);
     this->resize(800, 500);
     // 初始化布局，四个切换按钮
+    QString button_style = "background-color: rgb(6, 72, 120);color:white;border-radius: 4px;";
     QGridLayout *layout = new QGridLayout(this);
     QPushButton *latencyBtn = new QPushButton("时延折线图");
     QPushButton *throughputBtn = new QPushButton("总吞吐");
@@ -30,7 +31,12 @@ lineGraphWidget::lineGraphWidget(QWidget* parent): QWidget(parent) {
 //    QPushButton *imageThrBth = new QPushButton("图像吞吐");
     QPushButton *latencyScattarBth = new QPushButton("时延散点图");
     QPushButton *thrBarBth = new QPushButton("分吞吐");
-
+    latencyBtn->setStyleSheet(button_style);
+    throughputBtn->setStyleSheet(button_style);
+    ditheringBtn->setStyleSheet(button_style);
+    convergenceBtn->setStyleSheet(button_style);
+    latencyScattarBth->setStyleSheet(button_style);
+    thrBarBth->setStyleSheet(button_style);
     // 初始化图表数据
     timeSeries = new QVector<int>;
     latencySeries = new QVector<double>;
