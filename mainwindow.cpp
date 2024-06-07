@@ -302,12 +302,8 @@ void MainWindow::on_process_result_button_clicked()
              // QMessageBox::information(this, "仿真结果处理", "处理失败");
              auto box = getMessageBox(this, "仿真结果处理", "处理失败");
              box->exec();
-             lineGraphWidget* w = new lineGraphWidget();
-             w->show();
          }
      }
-
-
 }
 
 
