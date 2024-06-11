@@ -239,14 +239,18 @@ void MainWindow::on_udp_protocol_clicked()
 void MainWindow::on_war_message_clicked()
 {
      this->current_edit_node->dataType = DataType::Message;
-     this->ui->amountUnit->setText("bytes");
+     this->ui->dataAmountEdit->setText("1000");
+     this->current_edit_node->dataAmount = "1000";
+     this->ui->amountUnit->setText("字节");
 }
 
 
 void MainWindow::on_voice_message_clicked()
 {
      this->current_edit_node->dataType = DataType::Voice;
-     this->ui->amountUnit->setText("seconds");
+     this->ui->dataAmountEdit->setText("0.352");
+      this->current_edit_node->dataAmount = "0.352";
+     this->ui->amountUnit->setText("秒");
 }
 
 
@@ -254,7 +258,9 @@ void MainWindow::on_voice_message_clicked()
 void MainWindow::on_image_message_clicked()
 {
      this->current_edit_node->dataType = DataType::Image;
-     this->ui->amountUnit->setText("bytes");
+     this->ui->dataAmountEdit->setText("30000");
+      this->current_edit_node->dataAmount = "30000";
+     this->ui->amountUnit->setText("字节");
 
 }
 
@@ -262,7 +268,9 @@ void MainWindow::on_image_message_clicked()
 void MainWindow::on_video_message_clicked()
 {
      this->current_edit_node->dataType = DataType::Video;
-     this->ui->amountUnit->setText("bytes");
+     this->ui->dataAmountEdit->setText("34560");
+      this->current_edit_node->dataAmount = "34560";
+     this->ui->amountUnit->setText("字节");
 }
 
 
