@@ -207,9 +207,9 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 void MainWindow::set_panel(Node node)
 {
     if (node.dataType == DataType::Voice) {
-        this->ui->amountUnit->setText("seconds");
+        this->ui->amountUnit->setText("秒");
     } else {
-        this->ui->amountUnit->setText("bytes");
+        this->ui->amountUnit->setText("字节");
     }
      this->ui->current_node_name->setText(node.name);
      this->protocolGroup->button(node.protocol)->setChecked(true);
